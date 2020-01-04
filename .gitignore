@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# project
+ *.user
+ *.sln
+ MakeFile.*
+ MakeFile
+ .qmake.stash
+ *.vcxproj
+ vcxproj.*
+
+ # Qt
+ moc_*.cpp
+ ui_*.*
