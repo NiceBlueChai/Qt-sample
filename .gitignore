@@ -32,14 +32,23 @@
 *.app
 
 # project
- *.user
- *.sln
- MakeFile.*
- MakeFile
- .qmake.stash
- *.vcxproj
- vcxproj.*
+bin/
+build-*-Debug/
+build-*-Release/
+.qmake.*
+
+ # visual studio
+.vscode/
+.vs/
+*.sln
+ x64/
+win32/
+release/
+debug/
+*.vcxproj
+*.vcxproj.*
 
  # Qt
- moc_*.cpp
- ui_*.*
+ui_*
+*.user
+*.autosave

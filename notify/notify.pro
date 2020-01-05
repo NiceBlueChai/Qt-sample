@@ -12,11 +12,9 @@ FORMS += \
 
 HEADERS += \
     formnotify.h \
-    notify.h \
     notifymanager.h
 
 SOURCES += \
     formnotify.cpp \
     main.cpp \
-    notify.cpp \
     notifymanager.cpp

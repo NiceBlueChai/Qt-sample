@@ -9,7 +9,8 @@ FormNotify::FormNotify(QWidget *parent)
     ui->setupUi(this);
     ui->spinBox->setValue(10000);
     ui->spinBox->setSuffix("ms");
-    man.setMaxCount(3);
+    man = new NotifyManager(this);
+    man->setMaxCount(5);
 }
 
 FormNotify::~FormNotify()
@@ -20,5 +21,5 @@ FormNotify::~FormNotify()
 void FormNotify::on_pushButton_clicked()
 {
     int showTime = ui->spinBox->value();
-    man.notify("你好","新年快乐...", showTime);
+    man->notify(this, "你好", "新年快乐...", showTime);
 }

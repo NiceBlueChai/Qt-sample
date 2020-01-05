@@ -1,14 +1,13 @@
 ﻿#ifndef FORMNOTIFY_H
 #define FORMNOTIFY_H
 
-#include <QWidget>
 #include "notifymanager.h"
+#include <QWidget>
 namespace Ui {
 class FormNotify;
 }
 
-class FormNotify : public QWidget
-{
+class FormNotify : public QWidget {
     Q_OBJECT
 
 public:
@@ -20,7 +19,7 @@ private slots:
 
 private:
     Ui::FormNotify *ui;
-    NotifyManager man;
+    NotifyManager *man;
 };
 
 #endif // FORMNOTIFY_H
