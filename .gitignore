@@ -40,12 +40,10 @@ build-*-Release/
  # visual studio
 .vscode/
 .vs/
-*.sln
  x64/
 win32/
 release/
 debug/
-*.vcxproj
 *.vcxproj.*
 
  # Qt
