@@ -1,10 +1,10 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "ble.h"
+#include <QDebug>
 #include <QLowEnergyController>
 #include <QMessageBox>
 #include <QStatusBar>
-#include <QDebug>
-BLE::BLE(QWidget* parent)
+BLE::BLE(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
@@ -13,7 +13,6 @@ BLE::BLE(QWidget* parent)
 
 	m_control = nullptr;
 	m_agent.setLowEnergyDiscoveryTimeout(10 * 1000);
-
 }
 void BLE::on_btnScanf_clicked()
 {
@@ -34,7 +33,7 @@ void BLE::on_btnDisConnect_clicked()
 	m_control->disconnectFromDevice();
 	ui.btnDisConnect->setEnabled(false);
 }
-void BLE::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
+void BLE::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
 	if (ui.btnDisConnect->isEnabled())
 	{
@@ -46,9 +45,8 @@ void BLE::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 	assert(m_control);
 	connect(m_control, &QLowEnergyController::stateChanged, this, &BLE::on_controlStateChanged);
 	m_control->connectToDevice();
-	
 }
-void BLE::on_deviceDiscovered(const QBluetoothDeviceInfo& info)
+void BLE::on_deviceDiscovered(const QBluetoothDeviceInfo &info)
 {
 	m_statusBar->showMessage("发现设备:" + info.name());
 }
@@ -73,17 +71,21 @@ void BLE::on_controlStateChanged(QLowEnergyController::ControllerState state)
 	case QLowEnergyController::UnconnectedState:
 		m_statusBar->showMessage("设备未连接");
 		break;
-	case QLowEnergyController::ConnectingState: {
+	case QLowEnergyController::ConnectingState:
+	{
 		m_statusBar->showMessage("正在连接设备...");
 		ui.btnDisConnect->setEnabled(true);
-		break; }
-	case QLowEnergyController::ConnectedState: {
+		break;
+	}
+	case QLowEnergyController::ConnectedState:
+	{
 		ui.btnDisConnect->setEnabled(true);
 		m_statusBar->showMessage("设备已连接:" + m_control->remoteName());
 		connect(m_control, &QLowEnergyController::serviceDiscovered, this, &BLE::on_serviceDiscovered);
 		connect(m_control, &QLowEnergyController::discoveryFinished, this, &BLE::on_serviceDiscoveryFinished);
 		m_control->discoverServices();
-		break; }
+		break;
+	}
 	case QLowEnergyController::DiscoveringState:
 		m_statusBar->showMessage("正在发现服务...");
 		break;
@@ -100,41 +102,41 @@ void BLE::on_controlStateChanged(QLowEnergyController::ControllerState state)
 		break;
 	}
 }
-void BLE::on_serviceDiscovered(const QBluetoothUuid& newService)
+void BLE::on_serviceDiscovered(const QBluetoothUuid &newService)
 {
 	m_statusBar->showMessage("发现服务:" + newService.toString());
 }
 void BLE::on_serviceDiscoveryFinished()
 {
 	m_serviceList.clear();
-	for (auto uid:m_control->services())
+	for (auto uid : m_control->services())
 	{
 		auto service = m_control->createServiceObject(uid, this);
 		m_serviceList.append(service);
-		QTreeWidgetItem* item = new QTreeWidgetItem;
+		QTreeWidgetItem *item = new QTreeWidgetItem;
 		item->setText(0, service->serviceName());
 		item->setText(1, service->serviceUuid().toString());
 		item->setData(1, Qt::UserRole, service->serviceUuid());
 		ui.treeWidget->addTopLevelItem(item);
 	}
-	for (QLowEnergyService* lowEnergyService : m_serviceList) {
-		connect(lowEnergyService, 
-			QOverload<QLowEnergyService::ServiceError>::of(&QLowEnergyService::error),
-			[=](QLowEnergyService::ServiceError newError) { 
-			qDebug() << __FUNCTION__ << newError << lowEnergyService->serviceName();
-		});
+	for (QLowEnergyService *lowEnergyService : m_serviceList)
+	{
+		connect(lowEnergyService,
+				QOverload<QLowEnergyService::ServiceError>::of(&QLowEnergyService::error),
+				[=](QLowEnergyService::ServiceError newError) {
+					qDebug() << __FUNCTION__ << newError << lowEnergyService->serviceName();
+				});
 		connect(lowEnergyService, &QLowEnergyService::stateChanged, this,
-			&BLE::on_serviceStateChanged);
+				&BLE::on_serviceStateChanged);
 		if (lowEnergyService->state() == QLowEnergyService::DiscoveryRequired)
 		{
-			lowEnergyService->discoverDetails();	
+			lowEnergyService->discoverDetails();
 		}
 	}
-
 }
 void BLE::on_serviceStateChanged(QLowEnergyService::ServiceState newState)
 {
-	QLowEnergyService* service = static_cast<QLowEnergyService*>(sender());
+	QLowEnergyService *service = static_cast<QLowEnergyService *>(sender());
 	if (!service)
 	{
 		qInfo() << "ERROR :" << __FUNCTION__;
@@ -151,10 +153,12 @@ void BLE::on_serviceStateChanged(QLowEnergyService::ServiceState newState)
 	case QLowEnergyService::DiscoveringServices:
 		m_statusBar->showMessage(service->serviceName() + "Discovering...");
 		break;
-	case QLowEnergyService::ServiceDiscovered: {
+	case QLowEnergyService::ServiceDiscovered:
+	{
 		m_statusBar->showMessage(service->serviceName() + "Discovered...");
 		on_detialsDiscovered(service);
-		break; }
+		break;
+	}
 	case QLowEnergyService::LocalService:
 		m_statusBar->showMessage(service->serviceName() + "Local...");
 		break;
@@ -162,11 +166,11 @@ void BLE::on_serviceStateChanged(QLowEnergyService::ServiceState newState)
 		break;
 	}
 }
-void BLE::on_detialsDiscovered(QLowEnergyService * service)
+void BLE::on_detialsDiscovered(QLowEnergyService *service)
 {
 	int index = m_serviceList.indexOf(service);
 	auto topItem = ui.treeWidget->topLevelItem(index);
-	for (QLowEnergyCharacteristic characteristic: service->characteristics())
+	for (QLowEnergyCharacteristic characteristic : service->characteristics())
 	{
 		auto item = new QTreeWidgetItem;
 		item->setText(0, characteristic.name());
@@ -175,9 +179,7 @@ void BLE::on_detialsDiscovered(QLowEnergyService * service)
 		item->setData(1, Qt::UserRole, characteristic.handle());
 		item->setData(1, Qt::UserRole + 1, characteristic.value());
 		topItem->addChild(item);
-		
 	}
-
 }
 void BLE::initUI()
 {
@@ -185,20 +187,21 @@ void BLE::initUI()
 	ui.btnDisConnect->setEnabled(false);
 	m_statusBar = new QStatusBar(ui.widget);
 	m_statusBar->setMinimumWidth(400);
-	QHBoxLayout* layout = new QHBoxLayout(ui.widget);
+	QHBoxLayout *layout = new QHBoxLayout(ui.widget);
 	ui.widget->setLayout(layout);
 	m_statusBar->showMessage("准备就绪");
 
 	QStringList headers;
-	headers << "Name" << "Uuid";
+	headers << "Name"
+			<< "Uuid";
 	ui.treeWidget->setHeaderLabels(headers);
 	ui.treeWidget->setColumnWidth(0, 200);
 }
 void BLE::initSignalSlot()
 {
-	connect(&m_agent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)), this,
-		SLOT(on_deviceDiscovered(const QBluetoothDeviceInfo&)));
+	connect(&m_agent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo &)), this,
+			SLOT(on_deviceDiscovered(const QBluetoothDeviceInfo &)));
 	connect(&m_agent, SIGNAL(finished()), this, SLOT(on_deviceDiscoverFinished()));
 	connect(&m_agent, SIGNAL(error(QBluetoothDeviceDiscoveryAgent::Error)),
-		this, SLOT(on_deviceDiscoverError(QBluetoothDeviceDiscoveryAgent::Error)));
+			this, SLOT(on_deviceDiscoverError(QBluetoothDeviceDiscoveryAgent::Error)));
 }
