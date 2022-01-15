@@ -23,3 +23,10 @@ void FormNotify::on_pushButton_clicked()
     int showTime = ui->spinBox->value();
     man->notify(this, "你好", "新年快乐...", showTime);
 }
+
+void FormNotify::on_pushButton_2_clicked()
+{
+    int showTime = ui->spinBox->value();
+    man->notify(this, "你好", "新年快乐...", ":/images/INFO.svg", showTime);
+}
+

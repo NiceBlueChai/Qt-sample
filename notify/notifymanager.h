@@ -15,9 +15,13 @@ class Notify : public QWidget {
     Q_OBJECT
 public:
     explicit Notify(int showTime, QWidget *parent);
-    explicit Notify(QWidget *parent, const QString &title,
+    Notify(QWidget *parent, const QString &title,
         const QString &context, const QPixmap &pixmap = QPixmap(),
         int showTime = 0);
+    Notify(QWidget *parent, const QString &title,
+        const QString &context, const QString &svg_path,
+        int showTime = 0);
+
 
     Notify(const Notify &) = delete;
     Notify &operator=(const Notify &) = delete;
@@ -79,6 +83,7 @@ public:
     NotifyManager(QObject *parent);
     void notify(QWidget *parent, const QString &title,
         const QString &context, int showTime = 5000, const QPixmap &pixmap = QPixmap());
+    void notify(QWidget *parent, const QString &title, const QString &context, const QString &svg_path, int showTime = 5000);
     void setMaxCount(int value);
 
 private Q_SLOTS:

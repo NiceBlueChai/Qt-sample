@@ -1,12 +1,18 @@
 ﻿#include "notifymanager.h"
 #include <QApplication>
 #include <QDesktopWidget>
-
+#include <QSvgRenderer>
 #include <QGraphicsEffect>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QTimer>
+#include <QImage>
+
+namespace {
+const int kIconSize = 64;
+}
+
 
 Notify::Notify(int showTime, QWidget *parent)
     : QWidget(parent)
@@ -29,6 +35,17 @@ Notify::Notify(QWidget *parent,
     , pressed(false)
 {
     init();
+}
+
+Notify::Notify(QWidget *parent, const QString &title, const QString &context, const QString &svg_path, int showTime)
+    :Notify(parent, title, context, QPixmap(), showTime)
+{
+    QImage image(kIconSize, kIconSize, QImage::Format_RGB32);
+    QPainter painter(&image);
+    painter.fillRect(image.rect(), QColor("white"));
+    QSvgRenderer sr(svg_path);
+    sr.render(&painter);
+    pixmap = QPixmap::fromImage(image);
 }
 
 QSize Notify::sizeHint() const
@@ -84,8 +101,8 @@ void Notify::paintEvent(QPaintEvent * /*event*/)
     QPainter painter(this);
     // 设置画笔抗锯齿
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-    painter.setBrush(Qt::NoBrush);
-    painter.setPen(Qt::NoPen);
+//    painter.setBrush(Qt::NoBrush);
+//    painter.setPen(Qt::NoPen);
     // 绘制背景
     drawBg(&painter);
     // 绘制文字
@@ -172,8 +189,10 @@ void Notify::drawText(QPainter *painter)
 
 void Notify::drawIcon(QPainter *painter)
 {
-    painter->setOpacity(1);
-    painter->drawPixmap(26, 26, 48, 48, pixmap);
+    painter->save();
+//    painter->setOpacity(1);
+    painter->drawPixmap(20, (height() - kIconSize)/2, kIconSize, kIconSize, pixmap);
+    painter->restore();
 }
 
 void Notify::init()
@@ -216,6 +235,13 @@ void NotifyManager::notify(QWidget *parent, const QString &title, const QString 
         pix = style->standardPixmap(QStyle::SP_MessageBoxInformation);
     }
     auto notify = new Notify(parent, title, context, pix, showTime);
+    m_queue.push_back(notify);
+    showNext();
+}
+
+void NotifyManager::notify(QWidget *parent, const QString &title, const QString &context, const QString &svg_path, int showTime)
+{
+    auto notify = new Notify(parent, title, context, svg_path, showTime);
     m_queue.push_back(notify);
     showNext();
 }
