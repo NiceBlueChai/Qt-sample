@@ -11,7 +11,6 @@ class QWidget;
 class QPoint;
 class QRect;
 class QString;
-class QStringList;
 QT_END_NAMESPACE
 
 // 画笔的接口

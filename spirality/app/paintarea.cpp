@@ -2,7 +2,7 @@
 
 #include <QMouseEvent>
 #include <QPainter>
-#include <interface.h>
+#include "interface.h"
 
 
 Paintarea::Paintarea(QWidget *parent) : QWidget(parent)

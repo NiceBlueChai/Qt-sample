@@ -8,6 +8,7 @@
 #include "interface.h"
 #include <QScrollBar>
 
+#include <QActionGroup>
 #include <QDebug>
 #include <QToolBar>
 

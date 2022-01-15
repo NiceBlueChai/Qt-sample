@@ -4,7 +4,7 @@ QT +=widgets
 
 DESTDIR = ../../plugins
 TARGET = $$qtLibraryTarget(basictools)
-INCLUDEPATH += ../../app
+INCLUDEPATH += $$PWD/../../app
 
 HEADERS += \
     basictools.h

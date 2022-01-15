@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QImage>
+#include <QPainterPath>
 
 class IBrush;
 
@@ -36,7 +37,7 @@ private:
     void setupPainter(QPainter& painter);               // 设置画笔反锯齿和颜色
 
     QImage theImage = {2000, 2000, QImage::Format_RGB32};     // 背景图片/画布
-    QColor color = Qt::darkBlue;        // 画笔颜色
+    QColor color = Qt::yellow;        // 画笔颜色
     int thickness = 1;                  // 画笔宽度
     int symmetries;
     QPoint center;
