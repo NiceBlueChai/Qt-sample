@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QSizePolicy>
 #include <QKeyEvent>
+#include <math.h>
 
 struct GeoCoordinateEdit::Impl{
     QWidget* m_parent;
@@ -231,7 +232,6 @@ void GeoCoordinateEdit::initUI()
     data->lineEditSeconds->setValidator(data->secondValidator.data());
 
     QHBoxLayout* lay = new QHBoxLayout;
-    lay->setMargin(0);
     lay->setSpacing(0);
     lay->setContentsMargins(3,0,5,0);
     lay->addWidget(data->lineEditDegress);
