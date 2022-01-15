@@ -36,6 +36,7 @@ bin/
 bin/
 build-*-Debug/
 build-*-Release/
+build
 .qmake.*
 
  # visual studio
@@ -50,4 +51,5 @@ debug/
  # Qt
 ui_*
 *.user
+*.user.*
 *.autosave
