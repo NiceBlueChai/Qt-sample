@@ -1,6 +1,6 @@
 ﻿#include "notifymanager.h"
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QSvgRenderer>
 #include <QGraphicsEffect>
 #include <QMouseEvent>
@@ -278,8 +278,9 @@ void NotifyManager::showNext()
     }
     // 调整位置
     // TODO: 动画
-    QDesktopWidget *desktop = QApplication::desktop();
-    QRect rect = desktop->availableGeometry();
+    auto screen = QApplication::primaryScreen();
+    QRect rect = screen->availableGeometry();
+
     int w = rect.width();
     int h = rect.height();
     QPoint firstPos = QPoint(w - 320, h - 120);

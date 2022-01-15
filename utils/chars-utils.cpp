@@ -1,6 +1,7 @@
 ﻿#include "chars-utils.h"
 #include <string.h>
 
+
 namespace nbc {
 namespace utils {
 int fromUtf8( unsigned char b, unsigned char* src, unsigned char* end, unsigned char* dst_buf) {
@@ -37,13 +38,15 @@ int fromUtf8( unsigned char b, unsigned char* src, unsigned char* end, unsigned 
         // 第一字节最大是 0xF4
         return -1;
     }
+    (void)(min_uc);
+    (void)(uc);
     if (dst_buf) {
         memcpy(dst_buf, src, charsNeeded);
     }
     return charsNeeded;
 }
 
-int truncationUtf8(unsigned char* src, size_t src_len, size_t dst_len, unsigned char* dst = nullptr) {
+int truncationUtf8(unsigned char* src, unsigned int src_len, unsigned int dst_len, unsigned char* dst = nullptr) {
     if (dst_len >= src_len) {
         if (dst) {
             memcpy(dst, src, src_len);

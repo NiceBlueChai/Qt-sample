@@ -42,7 +42,6 @@ void BLE::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 	ui.treeWidget->clear();
 	int index = ui.listWidget->currentIndex().row();
 	m_control = QLowEnergyController::createCentral(m_deviceList.at(index));
-	assert(m_control);
 	connect(m_control, &QLowEnergyController::stateChanged, this, &BLE::on_controlStateChanged);
 	m_control->connectToDevice();
 }
@@ -121,11 +120,19 @@ void BLE::on_serviceDiscoveryFinished()
 	}
 	for (QLowEnergyService *lowEnergyService : m_serviceList)
 	{
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+        connect(lowEnergyService, &QLowEnergyService::errorOccurred, this,
+                [=](QLowEnergyService::ServiceError newError) {
+                    qDebug() << __FUNCTION__ << newError << lowEnergyService->serviceName();
+                });
+#else
 		connect(lowEnergyService,
-				QOverload<QLowEnergyService::ServiceError>::of(&QLowEnergyService::error),
+                QOverload<QLowEnergyService::ServiceError>::of(&QLowEnergyService::error),
+                this,
 				[=](QLowEnergyService::ServiceError newError) {
 					qDebug() << __FUNCTION__ << newError << lowEnergyService->serviceName();
 				});
+#endif
 		connect(lowEnergyService, &QLowEnergyService::stateChanged, this,
 				&BLE::on_serviceStateChanged);
 		if (lowEnergyService->state() == QLowEnergyService::DiscoveryRequired)
@@ -150,7 +157,11 @@ void BLE::on_serviceStateChanged(QLowEnergyService::ServiceState newState)
 	case QLowEnergyService::DiscoveryRequired:
 		m_statusBar->showMessage(service->serviceName() + "Required...");
 		break;
-	case QLowEnergyService::DiscoveringServices:
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+    case QLowEnergyService::DiscoveringService:
+#else
+    case QLowEnergyService::DiscoveringServices:
+#endif
 		m_statusBar->showMessage(service->serviceName() + "Discovering...");
 		break;
 	case QLowEnergyService::ServiceDiscovered:
@@ -176,7 +187,9 @@ void BLE::on_detialsDiscovered(QLowEnergyService *service)
 		item->setText(0, characteristic.name());
 		item->setText(1, characteristic.value().toHex('-'));
 		item->setData(0, Qt::UserRole, characteristic.uuid());
-		item->setData(1, Qt::UserRole, characteristic.handle());
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+        item->setData(1, Qt::UserRole, characteristic.handle());
+#endif
 		item->setData(1, Qt::UserRole + 1, characteristic.value());
 		topItem->addChild(item);
 	}
