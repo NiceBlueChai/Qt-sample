@@ -19,7 +19,9 @@ VLCplayer::VLCplayer(QWidget *parent)
         QString fileName = QFileDialog::getOpenFileName(this, "选择视频文件", "E:\\videos", "*.mp4");
         if (fileName.isEmpty())
             return;
+#ifdef Q_OS_WIN
         fileName = fileName.replace("/", "\\");
+#endif
         if (m_vlcMedia) {
             libvlc_media_release(m_vlcMedia);
             m_vlcMedia = NULL;
@@ -32,7 +34,12 @@ VLCplayer::VLCplayer(QWidget *parent)
             m_vlcPlayer = libvlc_media_player_new_from_media(m_vlcMedia);
 
             // 4. 设置视频目标显示窗口
+#ifdef Q_OS_UNIX
+            libvlc_media_player_set_xwindow(m_vlcPlayer, ui.videobox->winId());
+#else
             libvlc_media_player_set_hwnd(m_vlcPlayer, (HWND)ui.videobox->winId());
+#endif
+
         }
     });
     connect(ui.btnPlay, &QAbstractButton::clicked, [=]() {

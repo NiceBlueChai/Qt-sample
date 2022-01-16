@@ -10,7 +10,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(NOT MSVC)
-    message(FATAL_ERROR "Current vlc library in sdk Only supported MSVC_64 compiler(you can use another libvlc library)")
+    message(WARNING "Current vlc library in sdk Only supported MSVC_64 compiler(you can use another libvlc library)")
+if(UNIX)
+include(FindPkgConfig)
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(VLC REQUIRED libvlc>=3.0.1)
+endif(Unix)
 endif(NOT MSVC)
 
 find_package(Qt5 CONFIG COMPONENTS Widgets REQUIRED)
@@ -32,8 +37,7 @@ if(AUTO_DEPLOY)
     endif()
 endif(AUTO_DEPLOY)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sdk/include)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib)
+
 
 add_executable(VLCPlayer
     vlcplayer.ui
@@ -42,6 +46,14 @@ add_executable(VLCPlayer
     main.cpp
 )
 
+if(UNIX)
+target_link_libraries(VLCPlayer Qt5::Widgets ${VLC_LIBRARIES})
+endif(UNIX)
+
+
+if(MSVC)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sdk/include)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib)
 target_link_libraries(VLCPlayer Qt5::Widgets libvlccore libvlc)
 
 install(TARGETS VLCPlayer
@@ -76,3 +88,4 @@ if(AUTO_DEPLOY)
 add_custom_target(deploy_target
     COMMAND cmd.exe /k \"\"${BAT_vcvars_platform}\"&&${TOOL_WINDEPLOYQT} \"${CMAKE_INSTALL_PREFIX}/bin/VLCPlayer.exe\" -verbose=2\")
 endif()
+endif(MSVC)
