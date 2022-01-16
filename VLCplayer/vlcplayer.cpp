@@ -1,8 +1,6 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "vlcplayer.h"
 #include <QFileDialog>
-#pragma comment(lib, "libvlc")
-#pragma comment(lib, "libvlccore")
 
 VLCplayer::VLCplayer(QWidget *parent)
     : QMainWindow(parent)

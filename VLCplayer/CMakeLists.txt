@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.8)
 
 project(VLCPlayer)
 
@@ -37,7 +37,7 @@ endif(UNIX)
 if(MSVC)
     option(AUTO_DEPLOY "auto deploy use windeployqt.exe" ON)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sdk/include)
-    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib)
+    target_link_directories(VLCPlayer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib)
     target_link_libraries(VLCPlayer Qt${QT_VERSION_MAJOR}::Widgets libvlccore libvlc utils)
 
     install(TARGETS VLCPlayer
@@ -61,10 +61,10 @@ if(MSVC)
         bin)
 
     if(AUTO_DEPLOY)
-
+        set(VCVAR64_BAT_PATH CACHE PATH "vcvars64.bat path" "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/")
         # C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat
         find_program(BAT_vcvars_platform NAMES vcvars64.bat
-            PATHS "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build")
+            PATHS ${VCVAR64_BAT_PATH})
         if(NOT BAT_vcvars_platform)
             message(FATAL_ERROR "cannot find vcvars64.bat")
         endif()

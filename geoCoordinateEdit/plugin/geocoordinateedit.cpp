@@ -1,4 +1,4 @@
-#include "geocoordinateedit.h"
+﻿#include "geocoordinateedit.h"
 #include <QLineEdit>
 #include <QPointer>
 #include <QRegularExpressionValidator>
@@ -69,8 +69,9 @@ double GeoCoordinateEdit::degressMinuteSecond2Double(const QString &str,
     QString minStr = strList.at(0);
     QString secStr = strList.at(1).split("\"").at(0);
     double ret = degStr.toDouble()+minStr.toDouble()*60.0+secStr.toDouble()*3600.0;
-    if(isValidValue(ret, type))
+    if (isValidValue(ret, type)) {
         return ret;
+    }
     return -200.0;//无效值
 }
 

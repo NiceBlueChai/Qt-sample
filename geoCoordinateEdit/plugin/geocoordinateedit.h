@@ -1,4 +1,4 @@
-#ifndef GEOCOORDINATEEDIT_H
+﻿#ifndef GEOCOORDINATEEDIT_H
 #define GEOCOORDINATEEDIT_H
 
 #include <QWidget>
@@ -39,13 +39,13 @@ public:
     // \param[in] type 经纬度类型
     static double degressMinuteSecond2Double(const QString& str, GeoCoordinateEdit::ValueType type);
 
+    // \brief 验证经纬度
+    static bool isValidValue(double value, GeoCoordinateEdit::ValueType type);
+
     // \brief double -> 度分秒
     // param[in] value
     // param[in] type 经纬度类型
     static QString double2DegressMinuteSecond(double value, GeoCoordinateEdit::ValueType type);
-
-    // \brief 验证经纬度
-    static bool isValidValue(double value, GeoCoordinateEdit::ValueType type);
 
 public:
     virtual QSize sizeHint() const override;
