@@ -75,7 +75,7 @@ private:
  * @author: NiceBlueChai
  * @date: 2020/1/4
  */
-
+class QTimerEvent;
 class NotifyManager : public QObject {
     Q_OBJECT
 public:
@@ -85,6 +85,9 @@ public:
     void notify(QWidget *parent, const QString &title, const QString &context, const QString &svg_path, int showTime = 5000);
     void setMaxCount(int value);
 
+protected:
+    virtual void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
+
 private Q_SLOTS:
     void onDestroyed();
 
@@ -93,6 +96,7 @@ private:
     QQueue<Notify *> m_queue;
     QList<Notify *> m_list;
     int maxCount;
+    int timerId;
 };
 
 #endif // NOTIFYMANAGER_H

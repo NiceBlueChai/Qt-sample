@@ -4,6 +4,7 @@
 #include <QSvgRenderer>
 #include <QGraphicsEffect>
 #include <QMouseEvent>
+#include <QTimerEvent>
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QTimer>
@@ -11,7 +12,9 @@
 
 namespace {
 const int kIconSize = 64;
+const int kClostBtnSize = 24;
 const int kMaxNotifyCount = 6;
+const int kCheckQueueInterval = 500;
 }
 
 
@@ -43,9 +46,10 @@ Notify::Notify(QWidget *parent, const QString &title, const QString &context, co
 {
     QImage image(kIconSize, kIconSize, QImage::Format_RGB32);
     QPainter painter(&image);
-    painter.fillRect(image.rect(), QColor("white"));
+//    painter.fillRect(image.rect(), QColor("white"));
     QSvgRenderer sr(svg_path);
     sr.render(&painter);
+    painter.end();
     pixmap = QPixmap::fromImage(image);
 }
 
@@ -195,7 +199,7 @@ void Notify::drawText(QPainter *painter)
 void Notify::drawIcon(QPainter *painter)
 {
     painter->save();
-//    painter->setOpacity(1);
+    painter->setOpacity(1);
     painter->drawPixmap(20, (height() - kIconSize)/2, kIconSize, kIconSize, pixmap);
     painter->restore();
 }
@@ -206,16 +210,16 @@ void Notify::init()
     this->setWindowFlag(Qt::WindowSystemMenuHint);
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
-    //    setWindowOpacity(0.9);
+//        setWindowOpacity(0.9);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     btnClose.setObjectName("close-btn");
     btnClose.setText("X");
     btnClose.setParent(this);
-    btnClose.setFixedSize(25, 25);
+    btnClose.setFixedSize(kClostBtnSize, kClostBtnSize);
     btnClose.setStyleSheet("QPushButton{"
                       "border:none;"
                       "font:16px bold;"
-                      "background:rgba(240, 240, 250, 200);"
+                      "background:rgba(255, 255, 255, 0);"
                       "}"
                       "QPushButton:hover{"
                       "background:rgba(100, 234, 255, 200)"
@@ -228,8 +232,9 @@ void Notify::init()
 }
 
 NotifyManager::NotifyManager(QObject *parent)
-    : maxCount(kMaxNotifyCount)
+    : maxCount(kMaxNotifyCount), timerId(0)
 {
+
 }
 
 void NotifyManager::notify(QWidget *parent, const QString &title, const QString &context, int showTime, const QPixmap &pixmap)
@@ -248,7 +253,10 @@ void NotifyManager::notify(QWidget *parent, const QString &title, const QString 
 {
     auto notify = new Notify(parent, title, context, svg_path, showTime);
     m_queue.push_back(notify);
-    showNext();
+    // 线程不安全的
+    if (0 == timerId) {
+        timerId = startTimer(kCheckQueueInterval);
+    }
 }
 
 void NotifyManager::setMaxCount(int value)
@@ -256,17 +264,21 @@ void NotifyManager::setMaxCount(int value)
     maxCount = value;
 }
 
+void NotifyManager::timerEvent(QTimerEvent* event) {
+    if (event->timerId() == timerId) {
+        if (m_queue.isEmpty()) {
+            killTimer(timerId);
+        } else if(m_list.count() < maxCount) {
+            showNext();
+        }
+    }
+}
+
 void NotifyManager::onDestroyed()
 {
     Notify *notify = static_cast<Notify *>(sender());
     //    assert(notify != nullptr);
-    for (const auto & tmp_notify : qAsConst(m_list)) {
-        if (notify == tmp_notify) {
-            int index = m_list.indexOf(tmp_notify);
-            m_list.takeAt(index)->deleteLater();
-            break;
-        }
-    }
+    m_list.removeOne(notify);
     showNext();
 }
 
