@@ -1,4 +1,5 @@
-﻿#include "geocoordinateedit.h"
+﻿#pragma execution_character_set("utf-8")
+#include "geocoordinateedit.h"
 #include <QLineEdit>
 #include <QPointer>
 #include <QRegularExpressionValidator>
@@ -8,7 +9,10 @@
 #include <QKeyEvent>
 #include <math.h>
 
-struct GeoCoordinateEdit::Impl{
+class GeoCoordinateEditPrivate{
+    Q_DECLARE_PUBLIC(GeoCoordinateEdit)
+public:
+    GeoCoordinateEdit* q_ptr;
     QWidget* m_parent;
     GeoCoordinateEdit::ValueType type;
     QPointer<QValidator> curValueTypeDegressValidator;
@@ -21,8 +25,9 @@ struct GeoCoordinateEdit::Impl{
     QLineEdit* lineEditMinutes;
     QLineEdit* lineEditSeconds;
 
-    explicit Impl(QWidget* parent)
-        :m_parent(parent),type(GeoCoordinateEdit::Latitude),
+
+    explicit GeoCoordinateEditPrivate(GeoCoordinateEdit* parent)
+        :q_ptr(parent),m_parent(parent),type(GeoCoordinateEdit::Latitude),
           curValueTypeDegressValidator(createValidator(type)),
     minuteValidator(new QRegularExpressionValidator(parent)),
       secondValidator(new QRegularExpressionValidator(parent)),
@@ -48,7 +53,7 @@ struct GeoCoordinateEdit::Impl{
 
 
 GeoCoordinateEdit::GeoCoordinateEdit(QWidget *parent) :
-    QWidget(parent),data(new Impl(this))
+    QWidget(parent),d_ptr(new GeoCoordinateEditPrivate(this))
 {
     initUI();
     clear();
@@ -62,7 +67,6 @@ GeoCoordinateEdit::~GeoCoordinateEdit()
 double GeoCoordinateEdit::degressMinuteSecond2Double(const QString &str,
                                             GeoCoordinateEdit::ValueType type)
 {
-    auto tmpStr = str;
     auto strList = str.split(QStringLiteral("°"));
     QString degStr = strList.at(0);
     strList = strList.at(1).split("'");
@@ -111,94 +115,103 @@ QSize GeoCoordinateEdit::minimumSizeHint() const
 
 GeoCoordinateEdit::ValueType GeoCoordinateEdit::getType() const
 {
-    return data->type;
+    auto d = d_func();
+    return d->type;
 }
 
 QString GeoCoordinateEdit::text() const
 {
-    return QStringLiteral("%1°%2'%3\"").arg(data->lineEditDegress->text())
-            .arg(data->lineEditMinutes->text())
-            .arg(data->lineEditSeconds->text());
+    return QStringLiteral("%1°%2'%3\"").arg(d_ptr->lineEditDegress->text())
+            .arg(d_ptr->lineEditMinutes->text())
+            .arg(d_ptr->lineEditSeconds->text());
 }
 
 int GeoCoordinateEdit::getDegress() const
 {
-    return data->lineEditDegress->text().toInt();
+    return d_ptr->lineEditDegress->text().toInt();
 }
 
 int GeoCoordinateEdit::getMinutes() const
 {
-    return data->lineEditMinutes->text().toUInt();
+    return d_ptr->lineEditMinutes->text().toUInt();
 }
 
 double GeoCoordinateEdit::getSeconds() const
 {
-    return data->lineEditSeconds->text().toDouble();
+    return d_ptr->lineEditSeconds->text().toDouble();
 }
 
 double GeoCoordinateEdit::getValue() const
 {
-    return data->value;
+    return d_ptr->value;
 }
 
 QColor GeoCoordinateEdit::getColor() const
 {
-    return data->color;
+    return d_ptr->color;
 }
 
 QColor GeoCoordinateEdit::getBgColor() const
 {
-    return data->bgColor;
+    return d_ptr->bgColor;
 }
 
 void GeoCoordinateEdit::setType(GeoCoordinateEdit::ValueType type)
 {
-    data->type = type;
-    data->curValueTypeDegressValidator.clear();
-    data->curValueTypeDegressValidator = Impl::createValidator(data->type);
-    data->lineEditDegress->setValidator(data->curValueTypeDegressValidator.data());
-    emit typeChanged(data->type);
+    Q_D(GeoCoordinateEdit);
+    d->type = type;
+    d->curValueTypeDegressValidator.clear();
+    d->curValueTypeDegressValidator = GeoCoordinateEditPrivate::createValidator(d->type);
+    d->lineEditDegress->setValidator(d->curValueTypeDegressValidator.data());
+    emit typeChanged(d->type);
 }
 
 void GeoCoordinateEdit::setValue(double value)
 {
-    data->value = value;
+    Q_D(GeoCoordinateEdit);
+    d->value = value;
     valueChanged();
 }
 
 void GeoCoordinateEdit::setText(const QString &str)
 {
-    double ret = degressMinuteSecond2Double(str, data->type);
+    Q_D(GeoCoordinateEdit);
+    double ret = degressMinuteSecond2Double(str, d->type);
     if(ret <= -200.0)return;
-    data->value = ret;
+    d->value = ret;
     valueChanged();
 }
 
 void GeoCoordinateEdit::setColor(QColor color)
 {
-    data->color = color;
+    Q_D(GeoCoordinateEdit);
+    d->color = color;
     updateColor();
 }
 
 void GeoCoordinateEdit::setBgColor(QColor color)
 {
-    data->bgColor = color;
+    Q_D(GeoCoordinateEdit);
+    d->bgColor = color;
     updateColor();
 }
 
 void GeoCoordinateEdit::clear()
 {
-   data->value = 0.0;
-   valueChanged();
+    Q_D(GeoCoordinateEdit);
+    d->value = 0.0;
+    valueChanged();
 }
 
 void GeoCoordinateEdit::onTextEdited(const QString &)
 {
-    data->value = degressMinuteSecond2Double(text(), data->type);
+    Q_D(GeoCoordinateEdit);
+    d->value = degressMinuteSecond2Double(text(), d->type);
 }
 
 void GeoCoordinateEdit::initUI()
 {
+    Q_D(GeoCoordinateEdit);
     auto labelDregress = new QLabel;
     auto labelMinutes = new QLabel;
     auto labelSeconds = new QLabel;
@@ -215,31 +228,33 @@ void GeoCoordinateEdit::initUI()
     labelMinutes->setAlignment(Qt::AlignCenter);
     labelSeconds->setAlignment(Qt::AlignCenter);
 
-    data->lineEditDegress = new QLineEdit;
-    data->lineEditMinutes = new QLineEdit;
-    data->lineEditSeconds = new QLineEdit;
-    data->lineEditDegress->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    data->lineEditMinutes->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    data->lineEditSeconds->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    data->lineEditDegress->setMinimumWidth(36);
-    data->lineEditMinutes->setMinimumWidth(36);
-    data->lineEditSeconds->setMinimumWidth(70);
-    data->lineEditDegress->setAlignment(Qt::AlignCenter);
-    data->lineEditMinutes->setAlignment(Qt::AlignCenter);
-    data->lineEditSeconds->setAlignment(Qt::AlignCenter);
+    // TODO(NiceBlueChai): 完成功能，连接信号槽
+    // 发射相关信号
+    d->lineEditDegress = new QLineEdit(this);
+    d->lineEditMinutes = new QLineEdit(this);
+    d->lineEditSeconds = new QLineEdit(this);
+    d->lineEditDegress->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->lineEditMinutes->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->lineEditSeconds->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->lineEditDegress->setMinimumWidth(36);
+    d->lineEditMinutes->setMinimumWidth(36);
+    d->lineEditSeconds->setMinimumWidth(70);
+    d->lineEditDegress->setAlignment(Qt::AlignCenter);
+    d->lineEditMinutes->setAlignment(Qt::AlignCenter);
+    d->lineEditSeconds->setAlignment(Qt::AlignCenter);
 
-    data->lineEditDegress->setValidator(data->curValueTypeDegressValidator.data());
-    data->lineEditMinutes->setValidator(data->minuteValidator.data());
-    data->lineEditSeconds->setValidator(data->secondValidator.data());
+    d->lineEditDegress->setValidator(d->curValueTypeDegressValidator.data());
+    d->lineEditMinutes->setValidator(d->minuteValidator.data());
+    d->lineEditSeconds->setValidator(d->secondValidator.data());
 
     QHBoxLayout* lay = new QHBoxLayout;
     lay->setSpacing(0);
     lay->setContentsMargins(3,0,5,0);
-    lay->addWidget(data->lineEditDegress);
+    lay->addWidget(d->lineEditDegress);
     lay->addWidget(labelDregress);
-    lay->addWidget(data->lineEditMinutes);
+    lay->addWidget(d->lineEditMinutes);
     lay->addWidget(labelMinutes);
-    lay->addWidget(data->lineEditSeconds);
+    lay->addWidget(d->lineEditSeconds);
     lay->addWidget(labelSeconds);
 
     setLayout(lay);
@@ -247,28 +262,31 @@ void GeoCoordinateEdit::initUI()
 
 void GeoCoordinateEdit::updateColor()
 {
+    Q_D(GeoCoordinateEdit);
     QString sty=QString("*{color: %1; background-color: %2; border:0px;outline:0px;"
-                        "margin:0px;padding:0px;}").arg(data->color.name(QColor::HexArgb))
-            .arg(data->bgColor.name(QColor::HexArgb));
+                        "margin:0px;padding:0px;}").arg(d->color.name(QColor::HexArgb))
+            .arg(d->bgColor.name(QColor::HexArgb));
     setStyleSheet(sty);
 }
 
 void GeoCoordinateEdit::valueChanged()
 {
+    Q_D(GeoCoordinateEdit);
     QString deg, min, sec;
     getDMS(deg, min, sec);
-    data->lineEditDegress->setText(deg);
-    data->lineEditMinutes->setText(min);
-    data->lineEditSeconds->setText(sec);
+    d->lineEditDegress->setText(deg);
+    d->lineEditMinutes->setText(min);
+    d->lineEditSeconds->setText(sec);
 }
 
-void GeoCoordinateEdit::getDMS(QString &d, QString &m, QString &s)
+void GeoCoordinateEdit::getDMS(QString &degree , QString &minute, QString &second)
 {
-    double value = data->value;
+    Q_D(GeoCoordinateEdit);
+    double value = d->value;
     int deg = floor(value);
     int min = floor(60.0*(value-deg));
     double sec = 60.0*(60.0*(value-deg)-min);
-    d = QString::number(deg);
-    m = QString::number(min);
-    s = QString::number(sec);
+    degree = QString::number(deg);
+    minute = QString::number(min);
+    second = QString::number(sec);
 }

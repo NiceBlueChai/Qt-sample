@@ -1,8 +1,15 @@
-﻿#ifndef GEOCOORDINATEEDIT_H
+﻿/**
+ * \file geocoordinateedit.h
+ * \brief 这是一个可按照 度分秒 输入经纬度的输入框控件
+ * Copyright © 2016-2022 NiceBlueChai <bluechai@qq.com>
+ **/
+#ifndef GEOCOORDINATEEDIT_H
 #define GEOCOORDINATEEDIT_H
-
+#include <QtGlobal>
 #include <QWidget>
-#include <memory>
+#include <QScopedPointer>
+
+class GeoCoordinateEditPrivate;
 
 #ifdef quc
 #if (QT_VERSION < QT_VERSION_CHECK(5,7,0))
@@ -13,12 +20,13 @@
 
 class QDESIGNER_WIDGET_EXPORT GeoCoordinateEdit : public QWidget
 #else
-class GeoCoordinateEdit : public QWidget
+class GeoCoordinateEdit final : public QWidget
 #endif
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(GeoCoordinateEdit)
     Q_CLASSINFO("author", "NiceBlueChai")
-    Q_ENUMS(ValueType)
+
     Q_PROPERTY(ValueType type READ getType WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(QColor color READ getColor WRITE setColor)
@@ -30,9 +38,9 @@ public:
         Latitude
     };
 
-
+    Q_ENUM(ValueType)
     GeoCoordinateEdit(QWidget* parent = nullptr);
-    virtual ~GeoCoordinateEdit();
+    ~GeoCoordinateEdit();
 
     // \brief 度分秒 -> double
     // \param[in] str  QString("12°3'4.2345\"")
@@ -82,11 +90,11 @@ private:
     void initUI();
     void updateColor();
     void valueChanged();
-    void getDMS(QString& d, QString& m, QString& s);
+    void getDMS(QString& degree, QString& minute, QString& second);
 
 private:
-    struct Impl;
-    std::unique_ptr<Impl> data;
+
+    QScopedPointer<GeoCoordinateEditPrivate> d_ptr;
 };
 
 #endif // GEOCOORDINATEEDIT_H

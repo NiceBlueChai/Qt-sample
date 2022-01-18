@@ -13,23 +13,23 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="GeoCoordinateEdit" name="geoCoordinateEdit">
+  <widget class="GeoCoordinateEdit" name="geoCoordinateEdit" native="true">
    <property name="geometry">
     <rect>
      <x>60</x>
      <y>100</y>
-     <width>311</width>
-     <height>61</height>
+     <width>201</width>
+     <height>31</height>
     </rect>
    </property>
-   <property name="color">
+   <property name="color" stdset="0">
     <color>
      <red>200</red>
      <green>0</green>
      <blue>0</blue>
     </color>
    </property>
-   <property name="bgColor">
+   <property name="bgColor" stdset="0">
     <color alpha="100">
      <red>100</red>
      <green>200</green>
