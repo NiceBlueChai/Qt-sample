@@ -14,7 +14,7 @@
 class Notify : public QWidget {
     Q_OBJECT
 public:
-    explicit Notify(int showTime, QWidget *parent);
+    Notify(int showTime, QWidget *parent);
     Notify(QWidget *parent, const QString &title,
         const QString &context, const QPixmap &pixmap = QPixmap(),
         int showTime = 0);
@@ -26,7 +26,7 @@ public:
     Notify(const Notify &) = delete;
     Notify &operator=(const Notify &) = delete;
 
-    QSize sizeHint() const;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
 
     // 设置显示时间
     void setShowTime(int value);
@@ -58,7 +58,7 @@ private:
     void drawBg(QPainter *painter);
     void drawText(QPainter *painter);
     void drawIcon(QPainter *painter);
-    inline void init();
+    void init();
 
 private:
     bool pressed;
@@ -66,7 +66,7 @@ private:
     QString title;
     QString context;
     QPixmap pixmap;
-    QPushButton btn;
+    QPushButton btnClose;
 };
 
 /**
@@ -76,7 +76,6 @@ private:
  * @date: 2020/1/4
  */
 
-class Notify;
 class NotifyManager : public QObject {
     Q_OBJECT
 public:

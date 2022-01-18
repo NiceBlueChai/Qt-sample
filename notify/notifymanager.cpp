@@ -11,13 +11,14 @@
 
 namespace {
 const int kIconSize = 64;
+const int kMaxNotifyCount = 6;
 }
 
 
 Notify::Notify(int showTime, QWidget *parent)
-    : QWidget(parent)
-    , showTime(showTime)
-    , pressed(false)
+    : QWidget(parent),
+      pressed(false),
+      showTime(showTime)
 {
     init();
 }
@@ -27,12 +28,12 @@ Notify::Notify(QWidget *parent,
     const QString &context,
     const QPixmap &pixmap,
     int showTime)
-    : QWidget(parent)
-    , title(title)
-    , context(context)
-    , pixmap(pixmap)
-    , showTime(showTime)
-    , pressed(false)
+    : QWidget(parent),
+      pressed(false),
+      showTime(showTime),
+      title(title),
+      context(context),
+      pixmap(pixmap)
 {
     init();
 }
@@ -138,12 +139,16 @@ void Notify::closeEvent(QCloseEvent *event)
     animation->start();
     // Linux下GCC不支持lambda函数中调用基类的protected成员
 #if defined Q_OS_LINUX
-    connect(animation, &QPropertyAnimation::finished, this, [=]() {animation->deleteLater(); onCloseAnimationFinished(event); });
+    connect(animation, &QPropertyAnimation::finished, this, [=]() {
+        animation->deleteLater();
+        onCloseAnimationFinished(event);
+    });
 #elif defined Q_OS_WIN
     connect(animation, &QPropertyAnimation::finished, this, [=]() {
 		animation->deleteLater();
 		emit closed();
-		QWidget::closeEvent(event); });
+                QWidget::closeEvent(event);
+    });
 #endif
     event->ignore();
 }
@@ -203,11 +208,11 @@ void Notify::init()
     this->setAttribute(Qt::WA_TranslucentBackground);
     //    setWindowOpacity(0.9);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    btn.setObjectName("close-btn");
-    btn.setText("X");
-    btn.setParent(this);
-    btn.setFixedSize(25, 25);
-    btn.setStyleSheet("QPushButton{"
+    btnClose.setObjectName("close-btn");
+    btnClose.setText("X");
+    btnClose.setParent(this);
+    btnClose.setFixedSize(25, 25);
+    btnClose.setStyleSheet("QPushButton{"
                       "border:none;"
                       "font:16px bold;"
                       "background:rgba(240, 240, 250, 200);"
@@ -215,15 +220,15 @@ void Notify::init()
                       "QPushButton:hover{"
                       "background:rgba(100, 234, 255, 200)"
                       "}");
-    btn.move(300 - 26, 1);
-    connect(&btn, &QPushButton::clicked, [=]() {
+    btnClose.move(300 - 26, 1);
+    connect(&btnClose, &QPushButton::clicked, this, [this]() {
         emit canceled();
         close();
     });
 }
 
 NotifyManager::NotifyManager(QObject *parent)
-    : maxCount(6)
+    : maxCount(kMaxNotifyCount)
 {
 }
 
@@ -255,9 +260,9 @@ void NotifyManager::onDestroyed()
 {
     Notify *notify = static_cast<Notify *>(sender());
     //    assert(notify != nullptr);
-    for (auto n : m_list) {
-        if (notify == n) {
-            int index = m_list.indexOf(n);
+    for (const auto & tmp_notify : qAsConst(m_list)) {
+        if (notify == tmp_notify) {
+            int index = m_list.indexOf(tmp_notify);
             m_list.takeAt(index)->deleteLater();
             break;
         }
@@ -285,10 +290,10 @@ void NotifyManager::showNext()
     int h = rect.height();
     QPoint firstPos = QPoint(w - 320, h - 120);
     int count = m_list.length();
-    for (auto n : m_list) {
-        int index = m_list.indexOf(n);
+    for (const auto &tmp_notify : qAsConst(m_list)) {
+        int index = m_list.indexOf(tmp_notify);
         QPoint pos = firstPos - QPoint(0, (count - index - 1) * 120);
-        n->move(pos);
+        tmp_notify->move(pos);
     }
     if (notify)
         notify->show();
