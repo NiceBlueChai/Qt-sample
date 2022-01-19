@@ -18,6 +18,7 @@ add_test(NAME tst-gui-utils COMMAND tst-gui-utils)
 target_link_libraries(tst-gui-utils
     PRIVATE
     Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Widgets
     utils
     )
 add_dependencies(tst-gui-utils utils)
