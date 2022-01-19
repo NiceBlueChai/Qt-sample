@@ -246,7 +246,6 @@ void NotifyManager::notify(QWidget *parent, const QString &title, const QString 
     }
     auto notify = new Notify(parent, title, context, pix, showTime);
     m_queue.push_back(notify);
-    showNext();
 }
 
 void NotifyManager::notify(QWidget *parent, const QString &title, const QString &context, const QString &svg_path, int showTime)
@@ -268,6 +267,7 @@ void NotifyManager::timerEvent(QTimerEvent* event) {
     if (event->timerId() == timerId) {
         if (m_queue.isEmpty()) {
             killTimer(timerId);
+            timerId = 0;
         } else if(m_list.count() < maxCount) {
             showNext();
         }
