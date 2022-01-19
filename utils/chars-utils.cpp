@@ -2,9 +2,8 @@
 #include <string.h>
 
 
-namespace nbc {
-namespace utils {
-int fromUtf8( unsigned char b, unsigned char* src, unsigned char* end, unsigned char* dst_buf) {
+
+int nbc::utils::fromUtf8( unsigned char b, unsigned char* src, unsigned char* end, unsigned char* dst_buf) {
     if (b < 0x80) {
         if (dst_buf) {
             *dst_buf = b;
@@ -46,7 +45,7 @@ int fromUtf8( unsigned char b, unsigned char* src, unsigned char* end, unsigned 
     return charsNeeded;
 }
 
-int truncationUtf8(unsigned char* src, unsigned int src_len, unsigned int dst_len, unsigned char* dst = nullptr) {
+int nbc::utils::truncationUtf8(unsigned char* src, unsigned int src_len, unsigned int dst_len, unsigned char* dst) {
     if (dst_len >= src_len) {
         if (dst) {
             memcpy(dst, src, src_len);
@@ -64,6 +63,7 @@ int truncationUtf8(unsigned char* src, unsigned int src_len, unsigned int dst_le
         if (ret < 0) {
             return ret;
         }
+        cur += ret;
         if (charsLength + ret <= dst_len) {
             charsLength += ret;
         } else {
@@ -76,5 +76,4 @@ int truncationUtf8(unsigned char* src, unsigned int src_len, unsigned int dst_le
     }
     return charsLength;
 }
-}
-}
+

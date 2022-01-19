@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+﻿cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(utils VERSION 0.1 LANGUAGES CXX)
 
