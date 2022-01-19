@@ -58,6 +58,18 @@ QSize Notify::sizeHint() const
     return QSize(300, 100);
 }
 
+QString Notify::getTitle() const {
+    return title;
+}
+
+QString Notify::getContext() const {
+    return context;
+}
+
+QPixmap Notify::getPixmap() const {
+    return pixmap;
+}
+
 void Notify::setShowTime(int value)
 {
     showTime = value;

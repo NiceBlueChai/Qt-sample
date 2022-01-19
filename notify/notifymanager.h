@@ -15,18 +15,27 @@ class Notify : public QWidget {
     Q_OBJECT
 public:
     Notify(int showTime, QWidget *parent);
-    Notify(QWidget *parent, const QString &title,
-        const QString &context, const QPixmap &pixmap = QPixmap(),
-        int showTime = 0);
-    Notify(QWidget *parent, const QString &title,
-        const QString &context, const QString &svg_path,
-        int showTime = 0);
 
+    Notify(QWidget *parent,
+           const QString &title,
+           const QString &context,
+           const QPixmap &pixmap = QPixmap(),
+           int showTime = 0);
+
+    Notify(QWidget *parent,
+           const QString &title,
+           const QString &context,
+           const QString &svg_path,
+           int showTime = 0);
 
     Notify(const Notify &) = delete;
     Notify &operator=(const Notify &) = delete;
 
-    QSize sizeHint() const Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+    QString getTitle() const;
+    QString getContext() const;
+    QPixmap getPixmap() const;
 
     // 设置显示时间
     void setShowTime(int value);
@@ -43,16 +52,16 @@ Q_SIGNALS:
     // 点了关闭按钮
     void canceled();
     void closed();
-    // QWidget interface
+
 private slots:
     void onCloseAnimationFinished(QCloseEvent *event);
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void showEvent(QShowEvent *event) override;
-    virtual void closeEvent(QCloseEvent *event) override;
+    virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    virtual void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    virtual void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
 
 private:
     void drawBg(QPainter *painter);
