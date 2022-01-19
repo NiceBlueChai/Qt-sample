@@ -12,8 +12,8 @@ int nbc::utils::fromUtf8( unsigned char b, unsigned char* src, unsigned char* en
     }
 
     int charsNeeded;
-    unsigned char min_uc;
-    unsigned char uc;
+//    unsigned char min_uc;
+//    unsigned char uc;
 
     if (b <= 0xC1) {
         // 除了 US-ASCII 字符， UTF-8 字符的第一个字节至少是 0xC0
@@ -21,24 +21,24 @@ int nbc::utils::fromUtf8( unsigned char b, unsigned char* src, unsigned char* en
         return -1;
     } else if (b < 0xe0) {
         charsNeeded = 2;
-        min_uc = 0x80;
-        uc = b & 0x1f;
+//        min_uc = 0x80;
+//        uc = b & 0x1f;
     } else if (b < 0xf0) {
         charsNeeded = 3;
-        min_uc = 0x800;
-        uc = b & 0x0f;
+//        min_uc = 0x800;
+//        uc = b & 0x0f;
     } else if (b < 0xf5) {
         charsNeeded = 4;
-        min_uc = 0x10000;
-        uc = b & 0x07;
+//        min_uc = 0x10000;
+//        uc = b & 0x07;
     } else {
         // 最后一个 Unicode 字符编码为 U+10FFFF
         // 它的 UTF-8 编码为 "\xF4\x8f\xBF\xBF"
         // 第一字节最大是 0xF4
         return -1;
     }
-    (void)(min_uc);
-    (void)(uc);
+//    (void)(min_uc);
+//    (void)(uc);
     if (dst_buf) {
         memcpy(dst_buf, src, charsNeeded);
     }
