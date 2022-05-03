@@ -17,7 +17,7 @@ void ListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         auto rect = QRect(opt_rect.x() + opt_rect.width() - opt_rect.height(),
                              opt_rect.y(), opt_rect.height(), opt_rect.height());
 
-        auto image = QImage("D:\\gitee\\QtDemos\\listview-paint-btn\\folder-open.svg");
+        auto image = QImage("://folder-open.svg");
         painter->drawImage(rect, image);
         const_cast<QAbstractItemModel*>(index.model())->setData(index, rect, ListModel::OpenBtnRectRole);
     }
