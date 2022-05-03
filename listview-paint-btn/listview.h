@@ -39,12 +39,6 @@ class ListView : public QListView
 public:
     explicit ListView(QWidget* parent = nullptr);
 
-
-    virtual bool event(QEvent *event) override;
-
-
-    // QObject interface
-public:
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
 };
 

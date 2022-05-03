@@ -70,12 +70,6 @@ ListView::ListView(QWidget *parent)
     viewport()->installEventFilter(this);
 }
 
-bool ListView::event(QEvent *event)
-{
-
-    return QListView::event(event);
-}
-
 bool ListView::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched != viewport()) {
