@@ -1,17 +1,19 @@
 ﻿cmake_minimum_required(VERSION 3.8)
 
 project(Qt-Sample)
-
+if (BUILD_BLE)
 add_subdirectory(BLE)
+endif()
 add_subdirectory(notify)
 add_subdirectory(utils)
 add_subdirectory(geoCoordinateEdit)
 add_subdirectory(spirality)
+if (BUILD_VLCPlayer)
 add_subdirectory(VLCplayer)
+endif()
+option(BUILD_TESTING  "build tests" OFF)
 
-option(BUILD_TESTS "build tests" OFF)
-
-if(BUILD_TESTS)
-    add_subdirectory(tests)
+if(BUILD_TESTING)
     enable_testing()
-endif(BUILD_TESTS)
+    add_subdirectory(tests)
+endif(BUILD_TESTING)
