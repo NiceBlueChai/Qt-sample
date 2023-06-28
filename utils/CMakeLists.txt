@@ -19,6 +19,8 @@ set(PROJECT_SOURCES
     chars-utils.h
     gui-utils.cpp
     gui-utils.h
+    paint-utils.cpp
+    paint-utils.h
 )
 
 add_library(utils ${PROJECT_SOURCES})

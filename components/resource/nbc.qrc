@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/nbcui">
+        <file>images/icons/Menu_black.svg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,22 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/NBCuiTargets.cmake")
+check_required_components(
+  "nbcui"
+)
+get_filename_component(_nbcui_install_prefix "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+
+message(STATUS "_nbcui_install_prefix ${_nbcui_install_prefix}")
+
+set(_NBCUI_OWN_INCLUDE_DIRS "${_nbcui_install_prefix}/include/" "${_nbcui_install_prefix}/include")
+set_property(TARGET NBC::nbcui PROPERTY
+    INTERFACE_INCLUDE_DIRECTORIES ${_NBCUI_OWN_INCLUDE_DIRS}
+)
+
+# Remove dependency on UUID if on Windows
+if(NOT WIN32)
+  if(NOT TARGET PkgConfig::UUID)
+    find_package(PkgConfig REQUIRED QUIET)
+    pkg_search_module(UUID REQUIRED uuid IMPORTED_TARGET)
+  endif()
+endif()
