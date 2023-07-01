@@ -9,6 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
 
 jobs:
   build:
@@ -24,7 +25,26 @@ jobs:
       with:
         version: '5.15.2'
         arch: 'win64_msvc2019_64'
-
+        
+    - name: Install ninja-build tool
+      # You may pin to the exact commit or the version.
+      # uses: seanmiddleditch/gha-setup-ninja@16b940825621068d98711680b6c3ff92201f8fc0
+      uses: seanmiddleditch/gha-setup-ninja@v3
+      with:
+        # Version of ninja-build to install
+        version: 1.10.0
+        # Override default platform with one of [win, mac, linux]
+        platform: win
+        
+    - name: run-vcpkg
+      uses: lukka/run-vcpkg@v11.1
+      with:
+        vcpkgDirectory: ${{ github.workspace }}/vcpkg
+        # Run the installation of packages by running `vcpkg install` on the directory of the discovered 'vcpkg.json' file. Default is false.
+        
+    - name: Install-package-use-vcpkg        
+      run: ${{ github.workspace }}/vcpkg/vcpkg.exe install sqlite3:x64-windows
+    
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -39,4 +59,3 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}}
-
