@@ -19,12 +19,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v3.2.1
-      with:
-        version: '5.15.2'
-        arch: 'win64_msvc2019_64'
+   
         
     - name: Install ninja-build tool
       # You may pin to the exact commit or the version.
@@ -38,13 +33,14 @@ jobs:
         
     - name: run-vcpkg
       uses: lukka/run-vcpkg@v11.1
-      with:
-        vcpkgDirectory: ${{ github.workspace }}/vcpkg
         # Run the installation of packages by running `vcpkg install` on the directory of the discovered 'vcpkg.json' file. Default is false.
         
     - name: Install-package-use-vcpkg        
       run: ${{ github.workspace }}/vcpkg/vcpkg.exe install sqlite3:x64-windows
-    
+    - name: run-pwsh
+    - run: ${{ github.workspace }}/build.ps1
+      shell: pwsh
+      
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
