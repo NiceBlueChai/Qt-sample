@@ -35,7 +35,7 @@ jobs:
       uses: lukka/run-vcpkg@v11.1
         # Run the installation of packages by running `vcpkg install` on the directory of the discovered 'vcpkg.json' file. Default is false.
       with:
-        vcpkgGitCommitId: 4a3c366
+        vcpkgGitCommitId: 4a3c366f2d0d0eaf034bfa649124768df7cfe813
       
     - name: Install-package-use-vcpkg        
       run: ${{ github.workspace }}/vcpkg/vcpkg.exe install sqlite3:x64-windows
