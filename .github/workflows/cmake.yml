@@ -38,7 +38,7 @@ jobs:
     - name: Install-package-use-vcpkg        
       run: ${{ github.workspace }}/vcpkg/vcpkg.exe install sqlite3:x64-windows
     - name: run-pwsh
-    - run: ${{ github.workspace }}/build.ps1
+      run: ${{ github.workspace }}/build.ps1
       shell: pwsh
       
     - name: Configure CMake
